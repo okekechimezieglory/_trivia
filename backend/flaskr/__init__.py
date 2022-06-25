@@ -7,7 +7,7 @@ from flask import Flask, request, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
-#self.database_path = 'postgresql://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD,'localhost:5432', self.database_name)
+
 from sqlalchemy import func
 
 from models import setup_db, Question, Category
@@ -121,8 +121,7 @@ def create_app(test_config=None):
         """
         if 'searchTerm' in body:
             search_term = body.get('searchTerm', '').strip()
-            questions = Question.query.filter(
-                Question.question.ilike('%' + search_term + '%')).all()
+            questions = Question.query.filter(Question.question.ilike('%' + search_term + '%')).all()
 
             questions = [question.format() for question in questions]
 
@@ -204,15 +203,15 @@ def create_app(test_config=None):
                 category = Category.query.get(category_id)
 
             if category is not None:
-                quize = Question.query.filter(Question.category == category_id).filter(Question.id.notin_(previous_questions)).order_by(func.random()).first()
+                quiz = Question.query.filter(Question.category == category_id).filter(Question.id.notin_(previous_questions)).order_by(func.random()).first()
             elif category is None and len(previous_questions) < 5:
-                quize = Question.query.filter(Question.id.notin_(previous_questions)).order_by(func.random()).first()
+                quiz = Question.query.filter(Question.id.notin_(previous_questions)).order_by(func.random()).first()
             else:
-                quize = None
-            if quize is not None:
-                quize = quize.format()
+                quiz = None
+            if quiz is not None:
+                quiz = quiz.format()
             return jsonify({
-                'question': quize
+                'question': quiz
             })
         except:
             print(sys.exc_info())

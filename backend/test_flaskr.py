@@ -133,7 +133,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('questions', data)
         self.assertIn('totalQuestions', data)
-        self.assertFalse(data['totlQuestions'])
+        self.assertFalse(data['totalQuestions'])
 
      # successful operation: get questions by category
     def test_get_questions_by_category(self):
@@ -161,7 +161,7 @@ class TriviaTestCase(unittest.TestCase):
     # successful operation: get a random question for quizzes
     def test_post_quizzes(self):
         res = self.client().post('/quizzes', json={
-            'previous_questions': [5, 9, 23],
+            'previous_questions': [4, 7, 23],
             'quiz_category': {'id': 4, 'type': 'History'}
         })
         data = json.loads(res.data)
@@ -173,7 +173,7 @@ class TriviaTestCase(unittest.TestCase):
     # expected error: get no question when all category questions are in the previous
     def test_post_quizzes_no_more_question_found(self):
         res = self.client().post('/quizzes', json={
-            'previous_questions': [16, 17, 18, 19],
+            'previous_questions': [12, 13, 14, 15],
             'quiz_category': {'id': 2, 'type': 'Art'}
         })
         data = json.loads(res.data)
@@ -184,7 +184,7 @@ class TriviaTestCase(unittest.TestCase):
     # expected error: get no question when the max number of questions have been reached
     def test_post_quizzes_max_reached(self):
         res = self.client().post('/quizzes', json={
-            'previous_questions': [22, 17, 9, 5, 1],
+            'previous_questions': [21, 13, 9, 4, 1],
             'quiz_category': {'type': None, 'id': 0}
         })
         data = json.loads(res.data)

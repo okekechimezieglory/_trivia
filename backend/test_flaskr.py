@@ -14,6 +14,7 @@ class TriviaTestCase(unittest.TestCase):
         """Define test variables and initialize app."""
         self.app = create_app()
         self.client = self.app.test_client
+        self.delete_id = 24 
         self.database_name = "trivia_test"
         self.database_path = "postgresql+psycopg2://{}:{}@{}/{}".format('postgres', 'chimex','localhost:5432', self.database_name)
         #self.database_path = 'postgresql://{}:{}@{}/{}'.format(DB_USER, DB_PASSWORD,'localhost:5432', self.database_name)
@@ -25,13 +26,18 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
+            # set up a question to be deleted to avoid deletion failing
+            delete_quest = Question(
+                question='question', answer='answer', difficulty=2, category=1)
+            delete_quest.insert()
+            self.delete_id = delete_quest.id
+
     def tearDown(self):
         """Executed after reach test"""
         pass
 
     """
-    TODO
     Write at least one test for each test for successful operation and for expected errors.
     """
 
@@ -60,7 +66,7 @@ class TriviaTestCase(unittest.TestCase):
 
     # expected error: get questions in page that is out of range
     def test_404_get_questions_out_of_page(self):
-        res = self.client().get('/questions?page=1200')
+        res = self.client().get('/questions?page=1000')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
@@ -93,8 +99,8 @@ class TriviaTestCase(unittest.TestCase):
 
     # successful operation: delete a question successfuly
     def test_delete_question(self):
-        res = self.client().delete('/questions/' + str(self.delete_id))
-        data =json.loads(res.data)
+        res = self.client().delete('/questions/'+str(self.delete_id))
+        data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertIn('deleted', data)
@@ -118,9 +124,21 @@ class TriviaTestCase(unittest.TestCase):
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], 'resource not found')
 
+    # successful operation: search for questions by keyword in the search term
+    def test_post_search_questions(self):
+        res = self.client().post('/questions', json={"searchTerm": "question"})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIn('questions', data)
+        self.assertIn('totalQuestions', data)
+        self.assertTrue(data['totalQuestions'])
+        self.assertIn('currentCategory', data)
+
     # expected error: search for questions for search term that does not exist
     def test_search_questions_no_question(self):
-        res = self.client().post('/questions', json={"searchTerm": "zxdebyhadest"})
+        res = self.client().post(
+            '/questions', json={"searchTerm": "zxdebyhadest"})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -128,7 +146,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertIn('totalQuestions', data)
         self.assertFalse(data['totalQuestions'])
 
-     # successful operation: get questions by category
+    # successful operation: get questions by category
     def test_get_questions_by_category(self):
         res = self.client().get('/categories/1/questions')
         data = json.loads(res.data)
@@ -162,6 +180,17 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('question', data)
         self.assertIn('id', data['question'])
+
+    # expected error: get no question when all category questions are in the previous
+    def test_post_quizzes_no_more_question_found(self):
+        res = self.client().post('/quizzes', json={
+            'previous_questions': [16, 17, 18, 19],
+            'quiz_category': {'id': 2, 'type': 'Art'}
+        })
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(data['question'])
 
     # expected error: get no question when the max number of questions have been reached
     def test_post_quizzes_max_reached(self):

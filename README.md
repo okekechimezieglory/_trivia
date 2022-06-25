@@ -18,7 +18,7 @@ As a developer cloning this project, you should already have Python3, pip and no
 To clone, simply, cd to your preferred location and
 
 ```
-git clone https://github.com/chimexGitHub/trivia.git
+git clone https://github.com/chimexGitHub/_trivia.git
 ```
 
 ### Backend
@@ -243,7 +243,7 @@ curl http://127.0.0.1:5000/quizzes -X POST -H "Content-Type: application/json" -
 - Sample Request:
 
 ```
-curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question":"Here is a new question string", "answer":"Here is a new answer string", "difficulty":1, "category":3}'
+curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"question":"Heres a new question string", "answer":"Heres a new answer string", "difficulty":1, "category":3}'
 ```
 
 - Sample Response:
@@ -252,8 +252,8 @@ curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json"
 {
     'question': {
         'id': 24,
-        'question': 'Here is a new question string',
-        'answer': 'Here is a new answer string',
+        'question': 'Heres a new question string',
+        'answer': 'Heres a new answer string',
         'difficulty': 1,
         'category': 3
     }
@@ -269,7 +269,7 @@ curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json"
 - Sample Request:
 
 ```
-curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"searchTerm": "This is"}'
+curl http://127.0.0.1:5000/questions -X POST -H "Content-Type: application/json" -d '{"searchTerm": "this"}'
 ```
 
 - Sample Response:

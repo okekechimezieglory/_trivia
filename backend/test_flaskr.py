@@ -70,7 +70,8 @@ class TriviaTestCase(unittest.TestCase):
 
     # successful operation: post a new question
     def test_post_new_question(self):
-        res = self.client().post('/questions', json={"question": "Here is a newer question string", "answer": "Here is a new answer string", "difficulty": 1, "cateegory": 3})
+        res = self.client().post('/questions', json={"question": "Here is a newer question string",
+                                                     "answer":  "Heres a new answer string", "difficulty": 1, "category": 3})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -79,8 +80,11 @@ class TriviaTestCase(unittest.TestCase):
         self.delete_id = data['question']['id']
 
     # expected error: post a new question with empty or invalid parameter
-    def test_400_post_new_question_empty_or_invalid_prameter(self):
-        res = self.client().post('/questins', json={'question': 'Here is a new question string', 'category': 3,})
+    def test_400_post_new_question_empty_or_invalid_parameter(self):
+        res = self.client().post('/questions', json={
+            'question':  'Heres a new question string',
+            'category': 3,
+        })
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
@@ -113,17 +117,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
         self.assertEqual(data['message'], 'resource not found')
-
-    # successful operation: search for questions by keyword in the search term
-    def test_post_search_questions(self):
-        res = self.client().post('/questions', json={"searchTerm": "question"})
-        data =json.loads(res.data)
-
-        self.assertEqual(res.status_code, 200)
-        self.assertIn('questions', data)
-        self.assertIn('totalQuestions', data)
-        self.assertTrue(data['totalQuestions'])
-        self.assertIn('currentCategory', data)
 
     # expected error: search for questions for search term that does not exist
     def test_search_questions_no_question(self):
@@ -169,17 +162,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertIn('question', data)
         self.assertIn('id', data['question'])
-
-    # expected error: get no question when all category questions are in the previous
-    def test_post_quizzes_no_more_question_found(self):
-        res = self.client().post('/quizzes', json={
-            'previous_questions': [12, 13, 14, 15],
-            'quiz_category': {'id': 2, 'type': 'Art'}
-        })
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 200)
-        self.assertFalse(data['question'])
 
     # expected error: get no question when the max number of questions have been reached
     def test_post_quizzes_max_reached(self):

@@ -18,7 +18,7 @@ As a developer cloning this project, you should already have Python3, pip and no
 To clone, simply, cd to your preferred location and
 
 ```
-git clone https://github.com/chimexGitHub/_trivia.git
+git clone https://github.com/okekechimezieglory/_trivia.git
 ```
 
 ### Backend
